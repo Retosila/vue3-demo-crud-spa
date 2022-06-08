@@ -1,6 +1,8 @@
 <script setup>
 //  컴포넌트 용량을 줄이기 위해 필요한 요소들만 import해서 사용한다.
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+// programmatic navigation 방식으로 router를 활용하려면 별도의 컴포넌트에서 import 필요
+import router from '../router'
 
 
 // 등록된 계정 정보
@@ -16,6 +18,7 @@ const member = ref({
   memberId : '',
   memberPw : ''
 })
+
 
 accountList.value = JSON.parse(localStorage.getItem('accountList'))
 console.log(accountList.value)
@@ -43,15 +46,17 @@ function login() {
       console.log('회원 PW : ' + member.value.memberPw)
 
       // 회원 객체 정보를 로컬스토리지에 바인딩
-      localStorage.setItem('member', member.value)
+      localStorage.setItem('member', JSON.stringify(member))
+      localStorage.setItem('isLogOn', 'true')
 
       // admin 계정으로 로그인한 경우
-      // if (member.value.memberId == 'admin') {
-      //   console.log('관리자 계정 감지')
-      //   $router.push('Admin')
-      //   alert('관리자 페이지로 진입합니다.')
-      // }
-      
+      if (member.value.memberId == 'admin') {
+        router.push('/admin')
+        alert('관리자 계정 감지 : 관리자 페이지로 진입합니다.')
+        return
+      }
+
+      router.push('/home')
       alert(member.value.memberId + '님 안녕하세요!')
       
 
@@ -64,7 +69,6 @@ function login() {
   
 }
 
-
 // 유효성 검증
 function hasValidInput() {
   if (uid.value.trim() && pwd.value) {
@@ -76,11 +80,10 @@ function hasValidInput() {
   }
 }
 
-
 function toAdmin() {
-  self.$router
-  self.$router.push('Admin');
+  router.push('/admin');
 }
+
 
 </script>
 
@@ -100,8 +103,8 @@ function toAdmin() {
   <div class="buttons">
     <button @click="login">로그인</button><br/>
     <br/>
-    <button @click="$router.push('SignUp')">회원가입</button>
-    <button @click="$router.push('Admin')">관리자</button>
+    <button @click="$router.push('/signup')">회원가입</button>
+
   </div>
   <br/>
   <button @click="$router.push('/')">처음으로</button>

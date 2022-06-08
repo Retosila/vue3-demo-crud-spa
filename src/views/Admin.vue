@@ -5,7 +5,7 @@
 <script setup>
 
 //  컴포넌트 용량을 줄이기 위해 필요한 요소들만 import해서 사용한다.
-import { ref, reactive, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 // 반응형 데이터 선언 (Option API에서의 data() 메소드)
 // 코드 통일성을 위해 reactive가 아닌 ref로 통일
@@ -31,9 +31,6 @@ const member = ref({
   memberId : '',
   memberPw : ''
 })
-
-// 관리자 계정 접속 여부
-const isAdmin = ref(false)
 
 // watchers 옵션
 // select 엘리먼트의 option을 클릭하여 selected 변수에 변화가 발생할 경우, 
@@ -80,6 +77,7 @@ function update() {
     accountList.value[i] = selected.value = `${uid.value} ${pwd.value}`
     uid.value = pwd.value = ''
     alert('회원정보가 갱신되었습니다.')
+
   }
 }
 
@@ -103,6 +101,7 @@ function hasValidInput() {
     return false
   }
 }
+
 </script>
 
 <template>
