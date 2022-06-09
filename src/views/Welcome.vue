@@ -1,65 +1,65 @@
 <script setup>
+import { onMounted } from "vue";
+import { useAccount } from "@/stores/account";
 
-import { onMounted } from 'vue'
+// account 스토어 호출
+const account = useAccount();
 
-// 가입되어있는 회원 정보
-const accountList = ['scott tiger', 'reto qwe123!@', 'admin 1234']
-
-// DOM이 생성되면, 로컬스토리지에 있던 기존 데이터를 제거하고 새로운 계정 정보 바인딩
-// 임시 조치로, Pinia 및 EventBus를 활용해 다시 구현할 것
+// DOM이 생성되면, account 스토어에 계정 리스트 초기화
 onMounted(() => {
-
-    if (localStorage.getItem('accountList') == null) {
-        localStorage.setItem('accountList', JSON.stringify(accountList))
-        console.log(JSON.stringify(accountList))
-        console.log('로컬스토리지 초기화 완료')
+  // 계정 초기화가 안 되어있는 경우(처음 실행된 경우) 기본 계정 리스트로 초기화
+  if (account.accountList[0] === "initRequired") {
+    account.initAccount();
+    for (var i in account.accountList) {
+      console.log(account.accountList[i]);
     }
+    console.log("스토어 초기화 완료");
+  }
 
-    else {
-        console.log('바인딩 데이터 존재')
-        console.log(JSON.parse(localStorage.getItem('accountList')))
-        
+  // 초기화 이후 변경된 데이터가 있는 경우, 별도의 액션 X
+  else {
+    console.log("바인딩 데이터 존재");
+    for (var i in account.accountList) {
+      console.log(account.accountList[i]);
     }
-  
-})
-
+  }
+});
 </script>
 
 <template>
-
-<h1>Vue 3 CRUD Demo</h1>
-<div>
-<router-link to="/login" class="rl">START</router-link>
-</div>
-
+  <h1>Vue 3 CRUD Demo</h1>
+  <div>
+    <router-link to="/login" class="rl">START</router-link>
+  </div>
+  <h3></h3>
 </template>
 
 <style>
-
 * {
-    font-size: inherit;
+  font-size: inherit;
 }
 
 a {
-    margin : auto;
-    display : block;
+  margin: auto;
+  display: block;
 }
 
 a:visited {
-    text-decoration: none;
-    color : black;
+  text-decoration: none;
+  color: black;
 }
 
 h1 {
-    text-align : center;
-    font-size : 3em;
-    font-family : Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  text-align: center;
+  font-size: 3em;
+  font-family: Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
 }
 
 .rl {
-    text-align : center;
-    font-size : 1.5em;
-    font-family : Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  text-align: center;
+  font-size: 1.5em;
+  font-family: Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
 }
-
 </style>

@@ -1,9 +1,8 @@
-<script setup>
-</script>
+<script setup></script>
 
 <template>
   <!-- vue-router 활용 -->
-  <router-view/>
+  <router-view />
 </template>
 
 <style>

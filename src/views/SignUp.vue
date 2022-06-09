@@ -1,87 +1,79 @@
 <script setup>
-import { ref, watch } from 'vue'
-import router from '../router'
+import router from "../router";
+import { ref, watch } from "vue";
+import { useAccount } from "@/stores/account";
 
-const accountList = ref(JSON.parse(localStorage.getItem('accountList')))
-
-console.log(accountList.value)
+// account 스토어
+const account = useAccount();
 
 // 계정 아이디
-const uid = ref('')
+const uid = ref("");
 // 계정 비밀번호
-const pwd = ref('')
-// 현재 선택된 계정 (select 엘리먼트와 양방향 데이터 바인딩)
-const selected = ref('')
+const pwd = ref("");
+// 계정 이름
+const name = ref("");
+
+// 계정 리스트 정보가 변경되면, localStorage에 갱신된 정보를 바인딩
+watch(
+  account.accountList,
+  (currentState) => {
+    account.accountList = currentState;
+    console.log("스토어 최신화 완료");
+  },
+  { deep: true }
+);
 
 // DOM 직접 제어용(ref)
-const idInput = ref(null)
-
-// 회원 정보
-const member = ref({
-  memberId : '',
-  memberPw : ''
-})
-
-watch(accountList, (currentState, prevState) => {
-    localStorage.setItem('accountList', JSON.stringify(currentState))
-    console.log('로컬스토리지 최신화 완료')
-    }, 
-    //배열이라 deep watch사용
-    { deep: true })
+const idInput = ref(null);
 
 function signUp() {
   if (hasValidInput()) {
-    const account = `${uid.value} ${pwd.value}`
+    const user = `${uid.value} ${pwd.value} ${name.value}`;
 
     // 중복된 ID의 계정일 경우 거부 처리
-    for (var i = 0; i < accountList.value.length; i++) {
-      const tempId = accountList.value[i].split(' ')[0]
+    for (let i = 0; i < account.accountList.length; i++) {
+      const tempId = account.accountList[i].split(" ")[0];
       if (tempId == uid.value) {
-        alert('이미 존재하는 아이디입니다.\r다른 아이디를 입력하십시오.')
-        uid.value = ''
-        idInput.value.focus()
-        return
+        alert("이미 존재하는 아이디입니다.\r다른 아이디를 입력하십시오.");
+        uid.value = "";
+        idInput.value.focus();
+        return;
       }
     }
 
-        member.value.memberId = uid.value
-        member.value.memberPw = pwd.value
+    // 회원 객체 정보 스토어에 갱신
+    account.member.uid = uid.value;
+    account.member.pwd = pwd.value;
+    account.member.name = name.value;
 
-      // 회원 객체 정보를 로컬스토리지에 바인딩
-      localStorage.setItem('member', JSON.stringify(member))
-      localStorage.setItem('isLogOn', 'true')
+    account.isLogOn = true;
 
-    accountList.value.push(account)
-    alert(uid.value + '님, 환영합니다!')
-    router.push('/home')
-   
+    account.accountList.push(user);
+
+    alert(name.value + "님, 환영합니다!");
+    router.push("/home");
+
+    return;
   }
 }
 
 // 유효성 검증
 function hasValidInput() {
-  if (uid.value.trim() && pwd.value) {
-    return true
-  }
-  else {
-    alert('아이디 및 비밀번호를 입력해주십시오.')
-    return false
+  if (uid.value.trim() && pwd.value && name.value) {
+    return true;
+  } else {
+    alert("비어있는 값은 허용되지 않습니다.");
+    return false;
   }
 }
-
 </script>
 
-
 <template>
-
-    <label>아이디 : <input v-model="uid" ref="idInput"></label>
-    <label>비밀번호 : <input v-model="pwd" type="password"></label>
-    <br/>
-    <button @click="signUp">회원 가입</button>
-
-
+  <label>아이디 : <input v-model="uid" ref="idInput" /></label>
+  <label>비밀번호 : <input v-model="pwd" type="password" /></label>
+  <label>이름 : <input v-model="name" type="text" /></label>
+  <br />
+  <button @click="signUp">회원 가입</button>
 </template>
 
-<style>
-
-</style>
+<style></style>
